@@ -3,6 +3,7 @@ function appel_position(position)
     var latitude = position.coords.latitude;
     var longitude = position.coords.longitude;
     var meteo = new XMLHttpRequest();
+    //      bigdatacloud : api for geolocation
     fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`) // api pour afficher la ville
     .then(response => response.json())
     .then(data =>{
@@ -13,14 +14,16 @@ function appel_position(position)
         document.getElementById("codePays").innerText = codePays;
         console.log("ville : ", ville);
     })
+    //      open-meteo : api for meteo
     meteo.open('get','https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&current=temperature_2m,relative_humidity_2m,wind_gusts_10m,apparent_temperature,is_day,precipitation,cloud_cover&hourly=temperature_2m,is_day,precipitation_probability,precipitation,cloud_cover,is_day&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_hours');
     meteo.onload = function()
     {
-        console.log("la requête a réussi");
         var data = JSON.parse(meteo.response);
         console.log(latitude);
         console.log(longitude);
         console.log(data);
+
+        //     current DATA
 
         const currentCloudCover = data.current.cloud_cover;
         const currentIsDay = data.current.is_day == 1;
@@ -29,7 +32,7 @@ function appel_position(position)
         else if (currentCloudCover >= 20 && currentCloudCover < 60)     classIcone = currentIsDay ? "fa-solid fa-cloud-sun jaune_icone" : "fa-solid fa-cloud-sun bleu_icone";
         else classIcone = currentIsDay ? "fa-solid fa-cloud jaune_icone" : "fa-solid fa-cloud bleu_icone";
 
-        document.getElementById("current_is_day").className = classIcone; // current is cloudy and is day
+        document.getElementById("current_is_day").className = classIcone; // current is_cloudy and is_day
                
         document.getElementById("degre").innerHTML = data.current.apparent_temperature+"°"; // current temperature
 
@@ -43,6 +46,8 @@ function appel_position(position)
 
         document.getElementById("temperature_vent").innerText = degre+"° / "+wind_gust;
         document.getElementById("temperature_temps").innerText = " Feels like "+degre+"° "+" Tod, "+time;
+
+        //     hourly DATA
 
         for(i=0;i<24;i++)
         {
@@ -61,8 +66,10 @@ function appel_position(position)
             document.getElementById("is_day_section"+i).className = classIcone; // is cloudy and is day
 
             document.getElementById("temperature_section"+i).innerHTML = data.hourly.temperature_2m[i]+"°"; // hourly temperature
-            document.getElementById("pluie_percent_section"+i).innerHTML = rainPrecipitation+"%"; // hourly rain
+            document.getElementById("pluie_percent_section"+i).innerHTML = rainPrecipitation+"%"; // hourly rain precipitation
         }
+
+        //     weekdays DATA since the current day
 
         const joursDeSemaine = [];
         const dates = data.daily.time;
@@ -74,17 +81,25 @@ function appel_position(position)
 
         console.log("jour de semaine : ", joursDeSemaine);
 
+        //     daily DATA
+
+        // get DATA for the current day
         document.getElementById("joursDeSemaine0").innerHTML = "Today";
+        document.getElementById("%_jour0").innerHTML = data.daily.precipitation_sum[0]+"%";
+        document.getElementById("temperature_max0").innerHTML = data.daily.temperature_2m_max[0]+"°";
+        document.getElementById("temperature_min0").innerHTML = data.daily.temperature_2m_min[0]+"°";
+        // get DATA for the rest of the days
         for(i=1;i<7;i++)
         {
-            document.getElementById("joursDeSemaine"+i).innerHTML = joursDeSemaine[i];
-            document.getElementById("%_jour"+i).innerHTML = data.daily.precipitation_sum[i]+"%";
-            document.getElementById("temperature_max"+i).innerHTML = data.daily.temperature_2m_max[i]+"°";
-            document.getElementById("temperature_min"+i).innerHTML = data.daily.temperature_2m_min[i]+"°";
+            document.getElementById("joursDeSemaine"+i).innerHTML = joursDeSemaine[i]; // days of the week
+
+            document.getElementById("%_jour"+i).innerHTML = data.daily.precipitation_sum[i]+"%"; // daily rain precipitation
+            document.getElementById("temperature_max"+i).innerHTML = data.daily.temperature_2m_max[i]+"°"; // daily max temperature
+            document.getElementById("temperature_min"+i).innerHTML = data.daily.temperature_2m_min[i]+"°"; // daily min precipitation
         }
-        
-        document.getElementById("time_sunrise").innerHTML = data.daily.sunrise[0].slice(11, -3)+" : "+data.daily.sunrise[0].slice(-2);
-        document.getElementById("time_sunset").innerHTML = data.daily.sunset[0].slice(11, -3)+" : "+data.daily.sunrise[0].slice(-2);;
+
+        document.getElementById("time_sunrise").innerHTML = data.daily.sunrise[0].slice(11, -3)+" : "+data.daily.sunrise[0].slice(-2); // current sunrise
+        document.getElementById("time_sunset").innerHTML = data.daily.sunset[0].slice(11, -3)+" : "+data.daily.sunrise[0].slice(-2); // current sunset
     }
     meteo.onerror = function()
     {
