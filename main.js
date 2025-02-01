@@ -4,7 +4,7 @@ function appel_position(position)
     var longitude = position.coords.longitude;
     var meteo = new XMLHttpRequest();
     //      bigdatacloud : api for geolocation
-    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`) // api pour afficher la ville
+    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=33.96510&longitude=-6.85410&localityLanguage=fr`) // api pour afficher la ville
     .then(response => response.json())
     .then(data =>{
         console.log("data: ",data);
@@ -15,7 +15,7 @@ function appel_position(position)
         console.log("ville : ", ville);
     })
     //      open-meteo : api for meteo
-    meteo.open('get','https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&current=temperature_2m,relative_humidity_2m,wind_gusts_10m,apparent_temperature,is_day,precipitation,cloud_cover&hourly=temperature_2m,is_day,precipitation_probability,precipitation,cloud_cover,is_day&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_hours');
+    meteo.open('get','https://api.open-meteo.com/v1/forecast?latitude=33.96510&longitude=-6.85410&current=temperature_2m,relative_humidity_2m,wind_gusts_10m,apparent_temperature,is_day,precipitation,cloud_cover&hourly=temperature_2m,is_day,precipitation_probability,precipitation,cloud_cover,is_day&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_hours');
     meteo.onload = function()
     {
         var data = JSON.parse(meteo.response);
@@ -28,8 +28,8 @@ function appel_position(position)
         const currentCloudCover = data.current.cloud_cover;
         const currentIsDay = data.current.is_day == 1;
         let classIcone = "";
-        if(currentCloudCover < 20)  classIcone = currentIsDay ? "fa-solid fa-sun jaune_icone" : "fa-solid fa-sun bleu_icone";
-        else if (currentCloudCover >= 20 && currentCloudCover < 60)     classIcone = currentIsDay ? "fa-solid fa-cloud-sun jaune_icone" : "fa-solid fa-cloud-sun bleu_icone";
+        if(currentCloudCover < 20)  classIcone = currentIsDay ? "fa-solid fa-sun jaune_icone" : "fa-solid fa-moon bleu_icone";
+        else if (currentCloudCover >= 20 && currentCloudCover < 60)     classIcone = currentIsDay ? "fa-solid fa-cloud-sun jaune_icone" : "fa-solid fa-cloud-moon bleu_icone";
         else classIcone = currentIsDay ? "fa-solid fa-cloud jaune_icone" : "fa-solid fa-cloud bleu_icone";
 
         document.getElementById("current_is_day").className = classIcone; // current is_cloudy and is_day
