@@ -94,8 +94,8 @@ function appel_position(position)
             document.getElementById("joursDeSemaine"+i).innerHTML = joursDeSemaine[i]; // days of the week
 
             document.getElementById("%_jour"+i).innerHTML = data.daily.precipitation_sum[i]+"%"; // daily rain precipitation
-            document.getElementById("temperature_max"+i).innerHTML = data.daily.temperature_2m_max[i]+"°"; // daily min precipitation
-            document.getElementById("temperature_min"+i).innerHTML = data.daily.temperature_2m_min[i]+"°"; // daily max temperature
+            document.getElementById("temperature_max"+i).innerHTML = data.daily.temperature_2m_max[i]+"°"; // daily max precipitation
+            document.getElementById("temperature_min"+i).innerHTML = data.daily.temperature_2m_min[i]+"°"; // daily min temperature
         }
 
         document.getElementById("time_sunrise").innerHTML = data.daily.sunrise[0].slice(11, -3)+" : "+data.daily.sunrise[0].slice(-2); // current sunrise
